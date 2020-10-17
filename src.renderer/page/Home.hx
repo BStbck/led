@@ -5,6 +5,8 @@ import hxd.Key;
 class Home extends Page {
 	public static var ME : Home;
 
+	public static final PROJECT_EXTENSIONS = [".json", ".led_json"];
+
 	public function new() {
 		super();
 
@@ -134,14 +136,14 @@ class Home extends Page {
 
 
 	public function onLoad() {
-		dn.electron.Dialogs.open([".json"], App.ME.getDefaultDialogDir(), function(filePath) {
+		dn.electron.Dialogs.open(PROJECT_EXTENSIONS, App.ME.getDefaultDialogDir(), function(filePath) {
 			loadProject(filePath);
 		});
 	}
 
 	public function onLoadSamples() {
 		var path = JsTools.getExeDir()+"/samples";
-		dn.electron.Dialogs.open([".json"], path, function(filePath) {
+		dn.electron.Dialogs.open(PROJECT_EXTENSIONS, path, function(filePath) {
 			loadProject(filePath);
 		});
 	}
@@ -180,9 +182,10 @@ class Home extends Page {
 	}
 
 	public function onNew() {
-		dn.electron.Dialogs.saveAs([".json"], App.ME.getDefaultDialogDir(), function(filePath) {
+		dn.electron.Dialogs.saveAs(PROJECT_EXTENSIONS, App.ME.getDefaultDialogDir(), function(filePath) {
 			var fp = dn.FilePath.fromFile(filePath);
-			fp.extension = "json";
+			if(fp.extension == "")
+				fp.extension = PROJECT_EXTENSIONS[0];
 
 			var p = data.Project.createEmpty();
 			var data = JsTools.prepareProjectFile(p);
@@ -210,5 +213,4 @@ class Home extends Page {
 					jPage.find("button.fullscreen").click();
 		}
 	}
-
 }
